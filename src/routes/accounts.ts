@@ -59,7 +59,7 @@ router.post("/rulette/:accountNo", (req: any, res: any) => {
     return obj.accountNo === parseInt(accountNo);
   });
 
-  if (user && parseInt(risk_factor) > 1 && parseInt(risk_factor) < 100 ) {
+  if (user && parseInt(risk_factor) >= 1 && parseInt(risk_factor) < 100 ) {
     if(user.money >= money){
       if (Math.random() < 0.5){
         user.money += Math.round(user.money*((parseInt(risk_factor) / 100) + 1))
