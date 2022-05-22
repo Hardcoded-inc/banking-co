@@ -1,3 +1,3 @@
-const coffeeRoutes = require("./coffee");
+const accountsRoutes = require("./accounts");
 
-module.exports = { coffeeRoutes };
+module.exports = { accountsRoutes };

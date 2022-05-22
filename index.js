@@ -1,16 +1,31 @@
 const express = require("express");
 const cors = require("cors");
-const mongoose = require("mongoose");
-const { coffeeRoutes } = require("./routes");
+const { accountsRoutes } = require("./routes");
 const bodyParser = require("body-parser");
 
-// Load .env into process.env
-require("dotenv").config();
+const accounts = [
+  {
+    accountNo: 111,
+    name: "Krisitan Olszevsky",
+    money: 421,
+  },
+  {
+    accountNo: 222,
+    name: "Adamn Dupa",
+    money: 643,
+  },
+  {
+    accountNo: 333,
+    name: "Bob Tanaw",
+    money: 4234,
+  },
+  {
+    accountNo: 444,
+    name: "Bob Budowniczy",
+    money: 97567,
+  },
+];
 
-// Connect to DB
-const mongoUser = process.env.MONGO_DB_USER_LOGIN;
-const mongoPassword = process.env.MONGO_DB_USER_PASSWORD;
-const dbUri = `mongodb+srv://${mongoUser}:${mongoPassword}@brewlydb.h1xg0.mongodb.net/brewlydb?retryWrites=true&w=majority`;
 mongoose.connect(dbUri);
 mongoose.connection.on("connected", () => {
   console.log("Connected to mongo db");
@@ -21,7 +36,7 @@ mongoose.connection.on("connected", () => {
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use("/coffee", coffeeRoutes);
+app.use("/account", accountsRoutes);
 
 const port = process.env.PORT;
 app.listen(port, () => {
