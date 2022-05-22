@@ -1,8 +1,8 @@
-const { Router} = require("express");
+const { Router } = require("express");
 import { StatusCodes } from "http-status-codes";
 
 const router = Router();
-import accounts from "../data/accounts";
+import accounts, { Account } from "../data/accounts";
 
 router.get("/all-accounts", (req: any, res: any) => {
   res.status(StatusCodes.OK).json(accounts);
@@ -29,7 +29,7 @@ router.post("/transfer-multi", (req: any, res: any) => {
       ({ accountNo }) => accountNo === parseInt(sourceAccountNo)
     );
 
-    const {sum, ok} = destAccounts.reduce(
+    const { sum, ok } = destAccounts.reduce(
       ({ sum, ok }: { sum: number; ok: boolean }, { number, amount }: any) => {
         const account = accounts.find(
           ({ accountNo }) => accountNo === parseInt(number)
@@ -39,29 +39,28 @@ router.post("/transfer-multi", (req: any, res: any) => {
       }
     );
 
-    if(ok &&  sourceAccount?.money => sum) {
+    if (ok && sourceAccount && sourceAccount?.money >= sum) {
+      destAccounts.map(
+        ({ amount, number }: { amount: string; number: string }) => {
+          const destAccount = accounts.find(
+            ({ accountNo }) => accountNo === parseInt(number)
+          );
 
-      destAccounts.map(destAccount => {
-        if (sourceAccount && destAccount) {
-          if (sourceAccount.money > parseInt(amount)) {
-            sourceAccount.money -= parseInt(amount)
-            destAccount.money += parseInt(amount)
+          if (sourceAccount && destAccount) {
+            if (sourceAccount.money > parseInt(amount)) {
+              sourceAccount.money -= parseInt(amount);
+              destAccount.money += parseInt(amount);
+            } else {
+              res.status(StatusCodes.BAD_REQUEST).send();
+            }
           } else {
-            res.status(StatusCodes.BAD_REQUEST).send();
+            res.status(StatusCodes.NOT_FOUND).send();
           }
-        } else {
-          res.status(StatusCodes.NOT_FOUND).send();
         }
-      })
-
-
-
-
+      );
     }
 
-
     res.status(200).json(sourceAccountNo);
-
   } catch (err: any) {
     handleError(err, res);
   }
@@ -78,11 +77,10 @@ router.post("/transfer", (req: any, res: any) => {
       ({ accountNo }) => accountNo === parseInt(destAccountNo)
     );
 
-
     if (sourceAccount && destAccount) {
       if (sourceAccount.money > parseInt(amount)) {
-        sourceAccount.money -= parseInt(amount)
-        destAccount.money += parseInt(amount)
+        sourceAccount.money -= parseInt(amount);
+        destAccount.money += parseInt(amount);
       } else {
         res.status(StatusCodes.BAD_REQUEST).send();
       }
@@ -95,29 +93,29 @@ router.post("/transfer", (req: any, res: any) => {
 });
 
 router.post("/rulette/:accountNo", (req: any, res: any) => {
-  const { accountNo } = req.params
-  const { money, risk_factor } = req.body
+  const { accountNo } = req.params;
+  const { money, risk_factor } = req.body;
   const user = accounts.find((obj) => {
     return obj.accountNo === parseInt(accountNo);
   });
 
-  if (user && parseInt(risk_factor) > 1 && parseInt(risk_factor) < 100 ) {
-    if(user.money >= money){
-      if (Math.random() < 0.5){
-        user.money += Math.round(user.money*((parseInt(risk_factor) / 100) + 1))
+  if (user && parseInt(risk_factor) > 1 && parseInt(risk_factor) < 100) {
+    if (user.money >= money) {
+      if (Math.random() < 0.5) {
+        user.money += Math.round(
+          user.money * (parseInt(risk_factor) / 100 + 1)
+        );
         res.status(StatusCodes.OK).json(["You win", user]);
-      }else{
-        user.money -= Math.round(user.money*((parseInt(risk_factor)/100)))
+      } else {
+        user.money -= Math.round(user.money * (parseInt(risk_factor) / 100));
         res.status(StatusCodes.OK).json(["You loose", user]);
       }
-
-    }else{
+    } else {
       res.status(StatusCodes.CONFLICT).json(["Not enough money", user]).send();
     }
   } else {
     res.status(StatusCodes.NOT_FOUND).send();
   }
-
 });
 
 router.post("/deposit/:accountNumber", (req: any, res: any) => {
