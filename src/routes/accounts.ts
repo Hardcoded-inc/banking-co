@@ -10,7 +10,7 @@ router.get("/all-accounts", (req: any, res: any) => {
   res.send();
 });
 
-router.get("/", (req: any, res: any) => {
+router.get("/:accountNo", (req: any, res: any) => {
   const { accountNo } = req.params
 
   try {
