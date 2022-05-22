@@ -1,4 +1,4 @@
-const { Router, Request, Response } = require("express");
+const { Router} = require("express");
 import { StatusCodes } from "http-status-codes";
 
 const router = Router();
@@ -21,20 +21,62 @@ router.get("/:accountNo", (req: any, res: any) => {
   }
 });
 
-router.post("/", (req: any, res: any) => {
-  // TODO: Przelew z kont A do B, C, D, E
+router.post("/transfer-multi", (req: any, res: any) => {
+  try {
+    const { sourceAccountNo, destAccounts } = req.body;
+
+    const sourceAccount = accounts.find(
+      ({ accountNo }) => accountNo === parseInt(sourceAccountNo)
+    );
+
+    const {sum, ok} = destAccounts.reduce(
+      ({ sum, ok }: { sum: number; ok: boolean }, { number, amount }: any) => {
+        const account = accounts.find(
+          ({ accountNo }) => accountNo === parseInt(number)
+        );
+
+        return { sum: sum + amount, ok: account !== null && ok };
+      }
+    );
+
+    if(ok &&  sourceAccount?.money => sum) {
+
+      destAccounts.map(destAccount => {
+        if (sourceAccount && destAccount) {
+          if (sourceAccount.money > parseInt(amount)) {
+            sourceAccount.money -= parseInt(amount)
+            destAccount.money += parseInt(amount)
+          } else {
+            res.status(StatusCodes.BAD_REQUEST).send();
+          }
+        } else {
+          res.status(StatusCodes.NOT_FOUND).send();
+        }
+      })
+
+
+
+
+    }
+
+
+    res.status(200).json(sourceAccountNo);
+
+  } catch (err: any) {
+    handleError(err, res);
+  }
 });
 
 router.post("/transfer", (req: any, res: any) => {
   try {
-    const { sourceAccountNo, destAccountNo, amount} = req.body;
+    const { sourceAccountNo, destAccountNo, amount } = req.body;
 
     const sourceAccount = accounts.find(
-        ({ accountNo}) => accountNo === parseInt(sourceAccountNo)
-    )
+      ({ accountNo }) => accountNo === parseInt(sourceAccountNo)
+    );
     const destAccount = accounts.find(
-        ({ accountNo}) => accountNo === parseInt(destAccountNo)
-    )
+      ({ accountNo }) => accountNo === parseInt(destAccountNo)
+    );
 
 
     if (sourceAccount && destAccount) {
@@ -68,7 +110,7 @@ router.post("/rulette/:accountNo", (req: any, res: any) => {
         user.money -= Math.round(user.money*((parseInt(risk_factor)/100)))
         res.status(StatusCodes.OK).json(["You loose", user]);
       }
-      
+
     }else{
       res.status(StatusCodes.CONFLICT).json(["Not enough money", user]).send();
     }
