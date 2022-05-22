@@ -5,19 +5,17 @@ const router = Router();
 import accounts from "../data/accounts";
 
 router.get("/all-accounts", (req: any, res: any) => {
-  res.status(StatusCodes.OK);
-  res.json(accounts);
-  res.send();
+  res.status(StatusCodes.OK).json(accounts);
 });
 
 router.get("/:accountNo", (req: any, res: any) => {
-  const { accountNo } = req.params
+  const { accountNo } = req.params;
 
   try {
     const data = accounts.find((obj) => {
       return obj.accountNo === parseInt(accountNo);
     });
-    res.status(200).json(data)
+    res.status(200).json(data);
   } catch (err: any) {
     handleError(err, res);
   }
