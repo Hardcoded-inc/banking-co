@@ -1,4 +1,6 @@
-const { Router } = require("express");
+const { Router, Request, Response } = require("express");
+import { StatusCodes } from "http-status-codes";
+
 const router = Router();
 import accounts from "../data/accounts";
 
@@ -24,8 +26,24 @@ router.post("/", (req: any, res: any) => {
   // TODO: Wpłac na konto
 });
 
-router.post("/", (req: any, res: any) => {
-  // TODO: Create account
+router.post("/create-account", (req: Request, res: Response) => {
+  // TODO: OL Create account
+
+  try {
+    const { name } = req.body;
+
+    const newAccountNo = (accounts.length + 1) * 111;
+
+    accounts.push({
+      name,
+      accountNo: newAccountNo,
+      money: 0,
+    });
+
+    res.status(StatusCodes.OK).send();
+  } catch (err: any) {
+    handleError(err, res);
+  }
 });
 
 router.post("/", (req: any, res: any) => {
@@ -35,5 +53,11 @@ router.post("/", (req: any, res: any) => {
 router.delete("/", (req: any, res: any) => {
   // TODO: Usun konto
 });
+
+const handleError = (err: any, res: Response) => {
+  const error = err as any;
+  console.error(error.message);
+  res.status(StatusCodes.INTERNAL_SERVER_ERROR).send();
+};
 
 export default router;
