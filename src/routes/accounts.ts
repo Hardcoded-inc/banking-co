@@ -5,19 +5,17 @@ const router = Router();
 import accounts from "../data/accounts";
 
 router.get("/all-accounts", (req: any, res: any) => {
-  res.status(StatusCodes.OK);
-  res.json(accounts);
-  res.send();
+  res.status(StatusCodes.OK).json(accounts);
 });
 
 router.get("/:accountNo", (req: any, res: any) => {
-  const { accountNo } = req.params
+  const { accountNo } = req.params;
 
   try {
     const data = accounts.find((obj) => {
       return obj.accountNo === parseInt(accountNo);
     });
-    res.status(200).json(data)
+    res.status(200).json(data);
   } catch (err: any) {
     handleError(err, res);
   }
@@ -27,8 +25,31 @@ router.post("/", (req: any, res: any) => {
   // TODO: Przelew z kont A do B, C, D, E
 });
 
-router.post("/", (req: any, res: any) => {
-  // TODO: Przelew z konta A do B
+router.post("/transfer", (req: any, res: any) => {
+  try {
+    const { sourceAccountNo, destAccountNo, amount} = req.body;
+
+    const sourceAccount = accounts.find(
+        ({ accountNo}) => accountNo === parseInt(sourceAccountNo)
+    )
+    const destAccount = accounts.find(
+        ({ accountNo}) => accountNo === parseInt(destAccountNo)
+    )
+
+
+    if (sourceAccount && destAccount) {
+      if (sourceAccount.money > parseInt(amount)) {
+        sourceAccount.money -= parseInt(amount)
+        destAccount.money += parseInt(amount)
+      } else {
+        res.status(StatusCodes.BAD_REQUEST).send();
+      }
+    } else {
+      res.status(StatusCodes.NOT_FOUND).send();
+    }
+  } catch (err: any) {
+    handleError(err, res);
+  }
 });
 
 router.post("/rulette/:accountNo", (req: any, res: any) => {
@@ -57,46 +78,80 @@ router.post("/rulette/:accountNo", (req: any, res: any) => {
 
 });
 
-router.post("/", (req: any, res: any) => {
-  // TODO: Wpłac na konto
+router.post("/deposit/:accountNumber", (req: any, res: any) => {
+  try {
+    const { accountNumber } = req.params;
+    const { amount } = req.body;
+
+    const account = accounts.find(
+      ({ accountNo }) => accountNo === parseInt(accountNumber)
+    );
+
+    if (account) {
+      account.money += amount;
+      res.status(StatusCodes.OK).send();
+    } else {
+      res.status(StatusCodes.NOT_FOUND).send();
+    }
+  } catch (err: any) {
+    handleError(err, res);
+  }
 });
 
 router.post("/create-account", (req: any, res: any) => {
   try {
-    console.log(req.body);
     const { name } = req.body;
 
     const newAccountNo = (accounts.length + 1) * 111;
 
-    accounts.push({
-      accountNo: newAccountNo,
-      name,
-      money: 0,
-    });
+    if (!accounts.find(({ accountNo }) => accountNo === newAccountNo)) {
+      accounts.push({
+        accountNo: newAccountNo,
+        name,
+        money: 0,
+      });
 
-    res.status(StatusCodes.OK).send();
+      res.status(StatusCodes.CREATED).send();
+    } else {
+      res.status(StatusCodes.CONFLICT).send();
+    }
   } catch (err: any) {
     handleError(err, res);
   }
 });
 
-router.post("/", (req: any, res: any) => {
-  // TODO: Wyplac
+router.post("/pay-out/:accountNumber", (req: any, res: any) => {
+  try {
+    const { accountNumber } = req.params;
+    const { amount } = req.body;
+
+    const account = accounts.find(
+      ({ accountNo }) => accountNo === parseInt(accountNumber)
+    );
+
+    if (account && account?.money >= amount) {
+      account.money -= amount;
+      res.status(StatusCodes.OK).send();
+    } else {
+      res.status(StatusCodes.NOT_FOUND).send();
+    }
+  } catch (err: any) {
+    handleError(err, res);
+  }
 });
 
 router.delete("/:accountNumber", (req: any, res: any) => {
-  try{
-    const { accountNumber } = req.params
+  try {
+    const { accountNumber } = req.params;
 
-    accounts.forEach( (account, index) => {
-      if (account.accountNo == accountNumber) accounts.splice(index,1);
-    })
+    accounts.forEach((account, index) => {
+      if (account.accountNo == accountNumber) accounts.splice(index, 1);
+    });
 
-    res.status(200).json(accounts)
+    res.status(StatusCodes.OK).json(accounts);
   } catch (err: any) {
     handleError(err, res);
   }
-
 });
 
 const handleError = (err: any, res: any) => {
