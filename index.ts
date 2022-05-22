@@ -2,8 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const { accountsRoutes } = require("./routes");
 const bodyParser = require("body-parser");
+require("typescript");
 
-const accounts = [
+type Account = {
+  name: string;
+  accountNo: number;
+  money: number;
+};
+
+const accounts: Account[] = [
   {
     accountNo: 111,
     name: "Krisitan Olszevsky",
@@ -25,11 +32,6 @@ const accounts = [
     money: 97567,
   },
 ];
-
-mongoose.connect(dbUri);
-mongoose.connection.on("connected", () => {
-  console.log("Connected to mongo db");
-});
 
 // App
 
