@@ -70,7 +70,7 @@ router.post("/rulette/:accountNo", (req: any, res: any) => {
       }
       
     }else{
-      res.status(StatusCodes.OK).json(["Not enough money", user]).send();
+      res.status(StatusCodes.CONFLICT).json(["Not enough money", user]).send();
     }
   } else {
     res.status(StatusCodes.NOT_FOUND).send();
