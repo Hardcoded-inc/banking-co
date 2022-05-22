@@ -11,9 +11,16 @@ router.get("/all-accounts", (req: any, res: any) => {
 });
 
 router.get("/", (req: any, res: any) => {
-  // TODO: Pokaz stan konta
-  console.log(accounts);
-  console.log("asdf");
+  const { accountNo } = req.params
+
+  try {
+    const data = accounts.find((obj) => {
+      return obj.accountNo === parseInt(accountNo);
+    });
+    res.status(200).json(data)
+  } catch (err: any) {
+    handleError(err, res);
+  }
 });
 
 router.post("/", (req: any, res: any) => {
