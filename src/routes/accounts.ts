@@ -4,6 +4,12 @@ import { StatusCodes } from "http-status-codes";
 const router = Router();
 import accounts from "../data/accounts";
 
+router.get("/all-accounts", (req: any, res: any) => {
+  res.status(StatusCodes.OK);
+  res.json(accounts);
+  res.send();
+});
+
 router.get("/", (req: any, res: any) => {
   // TODO: Pokaz stan konta
   console.log(accounts);
@@ -26,17 +32,16 @@ router.post("/", (req: any, res: any) => {
   // TODO: Wpłac na konto
 });
 
-router.post("/create-account", (req: Request, res: Response) => {
-  // TODO: OL Create account
-
+router.post("/create-account", (req: any, res: any) => {
   try {
+    console.log(req.body);
     const { name } = req.body;
 
     const newAccountNo = (accounts.length + 1) * 111;
 
     accounts.push({
-      name,
       accountNo: newAccountNo,
+      name,
       money: 0,
     });
 
@@ -54,7 +59,7 @@ router.delete("/", (req: any, res: any) => {
   // TODO: Usun konto
 });
 
-const handleError = (err: any, res: Response) => {
+const handleError = (err: any, res: any) => {
   const error = err as any;
   console.error(error.message);
   res.status(StatusCodes.INTERNAL_SERVER_ERROR).send();
