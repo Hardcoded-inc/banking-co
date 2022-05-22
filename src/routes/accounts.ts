@@ -31,8 +31,32 @@ router.post("/", (req: any, res: any) => {
   // TODO: Przelew z konta A do B
 });
 
-router.post("/", (req: any, res: any) => {
-  // TODO: Ruletka inwestycyjna (procent)
+router.post("/rulette/:accountNo", (req: any, res: any) => {
+  const { accountNo } = req.params
+  const { money, risk_factor } = req.body
+  const user = accounts.find((obj) => {
+    return obj.accountNo === parseInt(accountNo);
+  });
+
+  if (user && parseInt(risk_factor) > 1 && parseInt(risk_factor) < 100 ) {
+    if(user.money >= money){
+      if (Math.random() < 0.5){
+        user.money += Math.round(user.money*((parseInt(risk_factor) / 100) + 1))
+        res.status(StatusCodes.OK).json(["You win", user]);
+      }else{
+        user.money -= Math.round(user.money*((parseInt(risk_factor)/100)))
+        res.status(StatusCodes.OK).json(["You loose", user]);
+      }
+      
+    }else{
+      res.status(StatusCodes.OK).json(["Not enough money", user]).send();
+    }
+  } else {
+    res.status(StatusCodes.NOT_FOUND).send();
+  }
+
+
+
 });
 
 router.post("/", (req: any, res: any) => {
