@@ -1,7 +1,6 @@
 const express = require("express");
-const cors = require("cors");
-const { accountsRoutes } = require("./routes");
 const bodyParser = require("body-parser");
+import accountsRoutes from "./routes/accounts";
 require("typescript");
 
 type Account = {
@@ -36,7 +35,6 @@ const accounts: Account[] = [
 // App
 
 const app = express();
-app.use(cors());
 app.use(bodyParser.json());
 app.use("/account", accountsRoutes);
 
