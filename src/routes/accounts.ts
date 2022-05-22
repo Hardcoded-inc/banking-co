@@ -55,8 +55,6 @@ router.post("/rulette/:accountNo", (req: any, res: any) => {
     res.status(StatusCodes.NOT_FOUND).send();
   }
 
-
-
 });
 
 router.post("/", (req: any, res: any) => {
