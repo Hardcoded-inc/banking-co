@@ -35,13 +35,28 @@ router.post("/", (req: any, res: any) => {
   // TODO: Ruletka inwestycyjna (procent)
 });
 
-router.post("/", (req: any, res: any) => {
-  // TODO: Wpłac na konto
+router.post("/deposit/:accountNumber", (req: any, res: any) => {
+  try {
+    const { accountNumber } = req.params;
+    const { amount } = req.body;
+
+    const account = accounts.find(
+      ({ accountNo }) => accountNo === parseInt(accountNumber)
+    );
+
+    if (account) {
+      account.money += amount;
+      res.status(StatusCodes.OK).send();
+    } else {
+      res.status(StatusCodes.NOT_FOUND).send();
+    }
+  } catch (err: any) {
+    handleError(err, res);
+  }
 });
 
 router.post("/create-account", (req: any, res: any) => {
   try {
-    console.log(req.body);
     const { name } = req.body;
 
     const newAccountNo = (accounts.length + 1) * 111;
@@ -63,18 +78,17 @@ router.post("/", (req: any, res: any) => {
 });
 
 router.delete("/:accountNumber", (req: any, res: any) => {
-  try{
-    const { accountNumber } = req.params
+  try {
+    const { accountNumber } = req.params;
 
-    accounts.forEach( (account, index) => {
-      if (account.accountNo == accountNumber) accounts.splice(index,1);
-    })
+    accounts.forEach((account, index) => {
+      if (account.accountNo == accountNumber) accounts.splice(index, 1);
+    });
 
-    res.status(200).json(accounts)
+    res.status(200).json(accounts);
   } catch (err: any) {
     handleError(err, res);
   }
-
 });
 
 const handleError = (err: any, res: any) => {
