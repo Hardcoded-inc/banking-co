@@ -75,8 +75,24 @@ router.post("/create-account", (req: any, res: any) => {
   }
 });
 
-router.post("/", (req: any, res: any) => {
-  // TODO: Wyplac
+router.post("/pay-out/:accountNumber", (req: any, res: any) => {
+  try {
+    const { accountNumber } = req.params;
+    const { amount } = req.body;
+
+    const account = accounts.find(
+      ({ accountNo }) => accountNo === parseInt(accountNumber)
+    );
+
+    if (account && account?.money >= amount) {
+      account.money -= amount;
+      res.status(StatusCodes.OK).send();
+    } else {
+      res.status(StatusCodes.NOT_FOUND).send();
+    }
+  } catch (err: any) {
+    handleError(err, res);
+  }
 });
 
 router.delete("/:accountNumber", (req: any, res: any) => {
