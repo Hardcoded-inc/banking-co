@@ -3,6 +3,7 @@ const router = Router();
 
 router.get("/", (req: any, res: any) => {
   // TODO: Pokaz stan konta
+  console.log("asdf");
 });
 
 router.post("/", (req: any, res: any) => {

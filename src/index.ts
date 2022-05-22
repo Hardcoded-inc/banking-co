@@ -36,9 +36,8 @@ const accounts: Account[] = [
 
 const app = express();
 app.use(bodyParser.json());
-app.use("/account", accountsRoutes);
+app.use("/", accountsRoutes);
 
-const port = process.env.PORT;
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port || 3001} `);
+app.listen(3001, () => {
+  console.log(`Example app listening on port ${3001} `);
 });
