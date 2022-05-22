@@ -51,13 +51,18 @@ router.post("/", (req: any, res: any) => {
 });
 
 router.delete("/:accountNumber", (req: any, res: any) => {
-  const { accountNumber } = req.params
+  try{
+    const { accountNumber } = req.params
 
-  accounts.forEach( (account, index) => {
-    if (account.accountNo == accountNumber) accounts.splice(index,1);
-  })
+    accounts.forEach( (account, index) => {
+      if (account.accountNo == accountNumber) accounts.splice(index,1);
+    })
 
-  res.status(200).json(accounts)
+    res.status(200).json(accounts)
+  } catch (err: any) {
+    handleError(err, res);
+  }
+
 });
 
 const handleError = (err: any, res: Response) => {
