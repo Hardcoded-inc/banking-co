@@ -12,7 +12,7 @@ const accounts: Account[] = [
   },
   {
     accountNo: 222,
-    name: "Adamn Dupa",
+    name: "Adamn Apud",
     money: 643,
   },
   {

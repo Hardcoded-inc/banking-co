@@ -84,20 +84,40 @@ router.post("/create-account", (req: any, res: any) => {
 
     const newAccountNo = (accounts.length + 1) * 111;
 
-    accounts.push({
-      accountNo: newAccountNo,
-      name,
-      money: 0,
-    });
+    if (!accounts.find(({ accountNo }) => accountNo === newAccountNo)) {
+      accounts.push({
+        accountNo: newAccountNo,
+        name,
+        money: 0,
+      });
 
-    res.status(StatusCodes.OK).send();
+      res.status(StatusCodes.CREATED).send();
+    } else {
+      res.status(StatusCodes.CONFLICT).send();
+    }
   } catch (err: any) {
     handleError(err, res);
   }
 });
 
-router.post("/", (req: any, res: any) => {
-  // TODO: Wyplac
+router.post("/pay-out/:accountNumber", (req: any, res: any) => {
+  try {
+    const { accountNumber } = req.params;
+    const { amount } = req.body;
+
+    const account = accounts.find(
+      ({ accountNo }) => accountNo === parseInt(accountNumber)
+    );
+
+    if (account && account?.money >= amount) {
+      account.money -= amount;
+      res.status(StatusCodes.OK).send();
+    } else {
+      res.status(StatusCodes.NOT_FOUND).send();
+    }
+  } catch (err: any) {
+    handleError(err, res);
+  }
 });
 
 router.delete("/:accountNumber", (req: any, res: any) => {
@@ -108,7 +128,7 @@ router.delete("/:accountNumber", (req: any, res: any) => {
       if (account.accountNo == accountNumber) accounts.splice(index, 1);
     });
 
-    res.status(200).json(accounts);
+    res.status(StatusCodes.OK).json(accounts);
   } catch (err: any) {
     handleError(err, res);
   }
