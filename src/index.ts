@@ -10,5 +10,5 @@ app.use(bodyParser.json());
 app.use("/", accountsRoutes);
 
 app.listen(3001, () => {
-  console.log(`Example app listening on port ${3001} `);
+  console.log(`Banking.co app listening on port ${3001} `);
 });
