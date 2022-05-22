@@ -1,8 +1,10 @@
 const { Router } = require("express");
 const router = Router();
+import accounts from "../data/accounts";
 
 router.get("/", (req: any, res: any) => {
   // TODO: Pokaz stan konta
+  console.log(accounts);
   console.log("asdf");
 });
 
