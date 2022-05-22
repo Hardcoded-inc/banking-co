@@ -36,15 +36,13 @@ router.post("/transfer", (req: any, res: any) => {
         ({ accountNo}) => accountNo === parseInt(destAccountNo)
     )
 
-    res.status(200).json(sourceAccountNo)
 
     if (sourceAccount && destAccount) {
       if (sourceAccount.money > parseInt(amount)) {
         sourceAccount.money -= parseInt(amount)
         destAccount.money += parseInt(amount)
-        res.status(200).json(sourceAccount)
       } else {
-        res.status(StatusCodes.BAD_REQUEST).message('not enough money').send();
+        res.status(StatusCodes.BAD_REQUEST).send();
       }
     } else {
       res.status(StatusCodes.NOT_FOUND).send();
