@@ -32,8 +32,14 @@ router.post("/", (req: any, res: any) => {
   // TODO: Wyplac
 });
 
-router.delete("/", (req: any, res: any) => {
-  // TODO: Usun konto
+router.delete("/:accountNumber", (req: any, res: any) => {
+  const { accountNumber } = req.params
+
+  accounts.forEach( (account, index) => {
+    if (account.accountNo == accountNumber) accounts.splice(index,1);
+  })
+
+  res.status(200).json(accounts)
 });
 
 export default router;
