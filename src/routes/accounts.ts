@@ -25,8 +25,33 @@ router.post("/", (req: any, res: any) => {
   // TODO: Przelew z kont A do B, C, D, E
 });
 
-router.post("/", (req: any, res: any) => {
-  // TODO: Przelew z konta A do B
+router.post("/transfer", (req: any, res: any) => {
+  try {
+    const { sourceAccountNo, destAccountNo, amount} = req.body;
+
+    const sourceAccount = accounts.find(
+        ({ accountNo}) => accountNo === parseInt(sourceAccountNo)
+    )
+    const destAccount = accounts.find(
+        ({ accountNo}) => accountNo === parseInt(destAccountNo)
+    )
+
+    res.status(200).json(sourceAccountNo)
+
+    if (sourceAccount && destAccount) {
+      if (sourceAccount.money > parseInt(amount)) {
+        sourceAccount.money -= parseInt(amount)
+        destAccount.money += parseInt(amount)
+        res.status(200).json(sourceAccount)
+      } else {
+        res.status(StatusCodes.BAD_REQUEST).message('not enough money').send();
+      }
+    } else {
+      res.status(StatusCodes.NOT_FOUND).send();
+    }
+  } catch (err: any) {
+    handleError(err, res);
+  }
 });
 
 router.post("/", (req: any, res: any) => {
